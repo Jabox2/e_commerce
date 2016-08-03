@@ -1,4 +1,4 @@
-<h1>Welcome to our E-commerce Store</h1>
+<h1><%= @head %></h1>
 <p>Have a look around :)<p>
 
 <div class="row">
@@ -7,7 +7,7 @@
         <div class="well center-it">
             <p><%= image_tag product.image.url, width: '100%' %></p>
             <h3><%= link_to product.name, product %></h3>
-            <p><%= number_to_currency number_to_currency(product.price) %></p>
+            <p><%= number_to_currency(product.price) %></p>
             <p>
                 <a href="#" data-toggle="modal" data-target="#myModal_<%= product.id %>">
                     <button type="button" class="btn btn-primary btn-lg" data-toggle="modal" data-target="#myModal_<%= product.id %>">

@@ -32,25 +32,51 @@
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </button>
-      <div class="dropdown">
-        <a class="dropdown-toggle" data-toggle="dropdown" href=root_path role="button" aria-haspopup="true" aria-expanded="false">
-          <div class="navbar-brand"><%= Rails.application.class.parent_name %></div> <span class="caret"></span>
-        </a>
-        <ul class="dropdown-menu">
-          <li><%= link_to "All Items", all_path %></li>
-          <li><%= link_to "Categorical", categorical_path %></li>
-          <li><%= link_to "Branding", branding_path %></li>
-        </ul>
-      </div>
+      <%= link_to Rails.application.class.parent_name, root_url, :class => "navbar-brand" %>
     </div>
 
     <!-- Collect the nav links, forms, and other content for toggling -->
     <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
       <ul class="nav navbar-nav">
-        <li><%= link_to "Categories", categories_url %></li>
-        <li><%= link_to "Products", products_url %></li>
-        <li><a href="#">About</a></li>
+        
+        <!-- Admin dropdown button -->
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-hashpopup="true" aria-expanded="false">Admin<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><%= link_to "Categories", categories_url %></li>
+              <li><%= link_to "Products", products_url %></li>
+            </ul>
+        </li>
+        
+        <!-- Categories dropdown button -->
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-hashpopup="true" aria-expanded="false">By Category<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><%= link_to 'All Categories', all_path %></li>
+              <% @categories.each do |cat| %>
+                <li><%= link_to cat.name, categorical_path(cat_id: cat.id) %></li>
+              <% end %>
+            </ul>
+        </li>
+        
+        
+        <!-- Brand dropdown button -->
+        <li class="dropdown">
+          <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-hashpopup="true" aria-expanded="false">By Brand<span class="caret"></span></a>
+            <ul class="dropdown-menu">
+              <li><%= link_to 'All Brands', all_path %></li>
+              <% @brands.each do |brand| %>
+                <li><%= link_to brand, branding_path(brand_id: brand) %></li>
+              <% end %>
+            </ul>
+        </li>
+        
+        <!-- View Order -->
+        <li><%= link_to 'View Order', view_order_path %></li>
+        
+        
       </ul>
+      <!--Devise nav links (user, log in/out) -->
       <p class="navbar-text pull-right">
       <% if user_signed_in? %>
         Logged in as <strong><%= current_user.email %></strong>.
