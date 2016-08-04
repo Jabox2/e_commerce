@@ -1,0 +1,16 @@
+<h1>Your Orders</h1>
+
+<%= link_to 'Create a new order', new_order_path %>
+
+<% @orders.each do |order| %>
+    <p>ID: <%= order.id %></p>
+    <% order.line_items.each do |order_item| %>
+        <p><strong><%= order_item.product.name %>:</strong> <%= order_item.quantity %></p>
+    <% end %>
+    <% if order.id == current_user.active_order_id %>
+        <p>This is your active order.</p>
+    <% else %>
+        <%= link_to 'Set as active order', select_order_path(order_id: order.id) %>
+    <% end %>
+    <hr>
+<% end %>

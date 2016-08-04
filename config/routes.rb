@@ -1,5 +1,5 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, :controllers => { registrations: 'registrations' }
   root 'storefront#all_items'
   
   #admin routes
@@ -17,6 +17,11 @@ Rails.application.routes.draw do
   post 'add_to_cart' => 'cart#add_to_cart'
   get 'view_order' => 'cart#view_order'
   get 'checkout' => 'cart#checkout'
+  post 'remove_from_cart' => 'cart#remove_from_cart'
+  
+  get 'view_orders' => 'cart#view_orders'
+  get 'new_order' => 'cart#new_order'
+  get 'select_order' => 'cart#select_order'
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

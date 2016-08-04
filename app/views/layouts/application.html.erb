@@ -59,7 +59,6 @@
             </ul>
         </li>
         
-        
         <!-- Brand dropdown button -->
         <li class="dropdown">
           <a class="dropdown-toggle" data-toggle="dropdown" role="button" aria-hashpopup="true" aria-expanded="false">By Brand<span class="caret"></span></a>
@@ -74,12 +73,14 @@
         <!-- View Order -->
         <li><%= link_to 'View Order', view_order_path %></li>
         
+        <!-- View Orders -->
+        <li><%= link_to 'View Orders', view_orders_path %></li>
         
       </ul>
       <!--Devise nav links (user, log in/out) -->
       <p class="navbar-text pull-right">
       <% if user_signed_in? %>
-        Logged in as <strong><%= current_user.email %></strong>.
+        Logged in as <strong><%= current_user.username %></strong>
         <%= link_to 'Edit profile', edit_user_registration_path, :class => 'navbar-link' %> |
         <%= link_to "Logout", destroy_user_session_path, method: :delete, :class => 'navbar-link'  %>
       <% else %>

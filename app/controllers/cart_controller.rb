@@ -1,6 +1,32 @@
 class CartController < ApplicationController
+  def new_order
+    @order = create_order
+    
+    redirect_to :view_orders
+  end
+  
+  def select_order
+    @user = current_user
+    @user.active_order_id = params[:order_id]
+    @user.save
+    
+    redirect_to :view_orders
+  end
+  
+  def view_orders
+    @orders = current_user.orders.all
+  end
+  
   def add_to_cart
-    line_items = LineItem.all
+    if current_user.active_order_id == nil
+      @order = create_order
+    else
+      @order = Order.find(current_user.active_order_id)
+    end
+    
+    line_items = @order.line_items
+    
+#    line_items = LineItem.all
     exists = false
     line_item = nil
     
@@ -16,6 +42,8 @@ class CartController < ApplicationController
       line_item.quantity += params[:quantity].to_i #adds to existing line item quantity
     else
       line_item = LineItem.new() #creates new line item
+      @order.line_items << line_item
+      @order.save
       line_item.product_id = params[:product_id]
       line_item.quantity = params[:quantity]
     end
@@ -24,18 +52,33 @@ class CartController < ApplicationController
     line_item.line_item_total = line_item.product.price * line_item.quantity
     line_item.save
     
-    redirect_to root_path
+    if params[:to_view]
+      redirect_to :view_order
+    else
+      redirect_to root_path
+    end
+  end
+  
+  def remove_from_cart
+    line_item = LineItem.find(params[:line_item_id])
+    line_item.quantity -= params[:quantity].to_i
+    line_item.save
+    
+    if line_item.quantity <= 0
+      line_item.destroy
+    end
+    
+    redirect_to :view_order
   end
 
   def view_order
-  @line_items = LineItem.all
+  @order = Order.find(current_user.active_order_id)
+  @line_items = @order.line_items
   end
 
   def checkout
-    @line_items = LineItem.all
-    @order = Order.new
-    @order.user_id = current_user.id
-    @order.subtotal = 0
+    @order = Order.find(current_user.active_order_id)
+    @line_items = @order.line_items
     
     #sets total quantities for each item in order and sets order.subtotal
     @line_items.each do |line_item|
@@ -52,11 +95,58 @@ class CartController < ApplicationController
     @order.grand_total = @order.subtotal + @order.sales_tax
     @order.save
     
-    @line_items.each do |line_item|
-      line_item.product.quantity -= line_item.quantity
-      line_item.product.save
+    if out_of_stock #returns true if order can be filled
+      @line_items.each do |line_item|
+      #to prevent overselling an item
+        line_item.product.quantity -= line_item.quantity
+        line_item.product.save
+      end
+
+      @order.line_items.destroy_all
+      @order.save
+    else #what to do if item is out of stock
+      messages = ''
+      first = true
+      @out_of_stock.each do |product_id, short|
+        product = Product.find(product_id)
+        if first
+          messages = "We are short #{short} #{product.name}"
+          first = false
+        else
+          messages += ", and #{short} #{product.name}"
+        end
+      end
+      messages += " for your order."
+      
+      flash[:alert] = messages
+      redirect_to :view_order
     end
+  end
+  
+  private
+  def out_of_stock
+    @order = Order.find(current_user.active_order_id)
+    line_items = @order.line_items
+    @out_of_stock = {}
+    @fill_order = true
     
-    LineItem.destroy_all
+    line_items.each do |line_item|
+      if (line_item.product.quantity - line_item.quantity) < 0
+        @out_of_stock[line_item.product_id] = line_item.quantity - line_item.product.quantity
+        @fill_order = false
+      end
+    end
+      
+    return @fill_order
+  end
+  
+  def create_order
+    @user = current_user
+    @order = Order.new
+    @user.orders << @order
+    @order.subtotal = 0
+    @order.save
+    
+    return @order
   end
 end
