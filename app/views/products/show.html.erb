@@ -34,9 +34,10 @@
   <strong>Category:</strong>
   <%= @product.category_id %>
 </p>
-
-<%= link_to 'Edit', edit_product_path(@product) %> |
-<%= link_to 'Back', products_path %>
+<% if current_user != nil && current_user.role == "admin" %>
+  <%= link_to 'Edit', edit_product_path(@product) %> |
+  <%= link_to 'Back', products_path %>
+<% end %>
 
 <!-- Add to Cart button -->
 <p>
