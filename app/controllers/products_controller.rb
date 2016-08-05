@@ -1,4 +1,5 @@
 class ProductsController < ApplicationController
+  before_action :admin_authorize, :except => [:show]#checks for admin
   before_action :set_product, only: [:show, :edit, :update, :destroy]
 
   # GET /products

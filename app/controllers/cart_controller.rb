@@ -1,13 +1,6 @@
 class CartController < ApplicationController
   def add_to_cart
-    if current_user.active_order_id == nil
-      user = current_user
-      @order = create_order
-      user.active_order_id = @order.id
-      user.save
-    else
-      @order = Order.find(current_user.active_order_id)
-    end
+    @order = set_order
     
     line_items = @order.line_items
     exists = false
@@ -43,6 +36,8 @@ class CartController < ApplicationController
   end
   
   def remove_from_cart
+    user = current_user
+    order = set_order
     line_item = LineItem.find(params[:line_item_id])
     line_item.quantity -= params[:quantity].to_i
     line_item.save
@@ -50,16 +45,14 @@ class CartController < ApplicationController
     if line_item.quantity <= 0
       line_item.destroy
     end
+    order.save
+    user.save
     
     redirect_to :view_order
   end
 
   def view_order
-    if current_user.active_order_id == nil
-      user = current_user
-      user.active_order_id = Order.find(current_user.orders.first)
-      user.save
-    end
+    @order = set_order
     
     @order = Order.find(current_user.active_order_id)
     @line_items = @order.line_items
@@ -68,6 +61,11 @@ class CartController < ApplicationController
   def checkout
     @order = Order.find(current_user.active_order_id)
     @line_items = @order.line_items
+    
+    if @line_items.empty?
+      flash[:alert] = "Order is empty"
+      redirect_to root_path
+    else
     
     #sets total quantities for each item in order and sets order.subtotal
     @line_items.each do |line_item|
@@ -93,6 +91,10 @@ class CartController < ApplicationController
 
       @order.line_items.destroy_all
       @order.save
+      
+      user = current_user
+      user.active_order_id = nil
+      user.save
     else #what to do if item is out of stock
       messages = ''
       first = true
@@ -110,6 +112,7 @@ class CartController < ApplicationController
       flash[:alert] = messages
       redirect_to :view_order
     end
+  end
   end
   
   private
@@ -129,13 +132,21 @@ class CartController < ApplicationController
     return @fill_order
   end
   
-  def create_order
-    @user = current_user
-    @order = Order.new
-    @user.orders << @order
-    @order.subtotal = 0
-    @order.save
+  def set_order
+    if current_user.active_order_id == nil
+      user = current_user
+      if user.orders.empty?
+        order = Order.new
+        user.orders << order
+        user.active_order_id = order.id
+      else
+        user.active_order_id = user.orders.first
+      end
+      user.save
+    else
+      order = Order.find(current_user.active_order_id)
+    end
     
-    return @order
+    return order
   end
 end
