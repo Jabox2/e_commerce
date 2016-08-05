@@ -1,32 +1,15 @@
 class CartController < ApplicationController
-  def new_order
-    @order = create_order
-    
-    redirect_to :view_orders
-  end
-  
-  def select_order
-    @user = current_user
-    @user.active_order_id = params[:order_id]
-    @user.save
-    
-    redirect_to :view_orders
-  end
-  
-  def view_orders
-    @orders = current_user.orders.all
-  end
-  
   def add_to_cart
     if current_user.active_order_id == nil
+      user = current_user
       @order = create_order
+      user.active_order_id = @order.id
+      user.save
     else
       @order = Order.find(current_user.active_order_id)
     end
     
     line_items = @order.line_items
-    
-#    line_items = LineItem.all
     exists = false
     line_item = nil
     
@@ -72,8 +55,14 @@ class CartController < ApplicationController
   end
 
   def view_order
-  @order = Order.find(current_user.active_order_id)
-  @line_items = @order.line_items
+    if current_user.active_order_id == nil
+      user = current_user
+      user.active_order_id = Order.find(current_user.orders.first)
+      user.save
+    end
+    
+    @order = Order.find(current_user.active_order_id)
+    @line_items = @order.line_items
   end
 
   def checkout

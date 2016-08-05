@@ -5,7 +5,7 @@ Rails.application.routes.draw do
   #admin routes
   resources :products
   resources :categories
-  resources :orders
+    resources :orders
   
   #storefront routes
   get 'all' => 'storefront#all_items'
@@ -20,9 +20,9 @@ Rails.application.routes.draw do
   get 'checkout' => 'cart#checkout'
   post 'remove_from_cart' => 'cart#remove_from_cart'
   
-  get 'view_orders' => 'cart#view_orders'
-  get 'new_order' => 'cart#new_order'
-  get 'select_order' => 'cart#select_order'
+  #orders
+
+  get 'select_order' => 'orders#select_order'
   
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".

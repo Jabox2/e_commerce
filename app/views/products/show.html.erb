@@ -32,7 +32,7 @@
 
 <p>
   <strong>Category:</strong>
-  <%= @product.category_id %>
+  <%= @product.category.name %>
 </p>
 <% if current_user != nil && current_user.role == "admin" %>
   <%= link_to 'Edit', edit_product_path(@product) %> |
