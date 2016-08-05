@@ -3,9 +3,10 @@
 <%= link_to 'Create a new order', new_order_path %>
 
 <% @orders.each do |order| %>
+    <br>
     <%= form_for(order) do |f| %>
         <div class="field">
-            <%= f.label :name %><br>
+            <%= f.label :name %>: <%= order.name %><br>
             <%= f.text_field :name %>
         </div>
         

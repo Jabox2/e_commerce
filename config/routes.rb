@@ -5,6 +5,7 @@ Rails.application.routes.draw do
   #admin routes
   resources :products
   resources :categories
+  resources :orders
   
   #storefront routes
   get 'all' => 'storefront#all_items'
