@@ -68,6 +68,7 @@ class CartController < ApplicationController
     else
     
     #sets total quantities for each item in order and sets order.subtotal
+    @order.subtotal = 0
     @line_items.each do |line_item|
       if @order.order_items[line_item.product_id].nil?
         @order.order_items[line_item.product_id] = line_item.quantity
@@ -91,10 +92,6 @@ class CartController < ApplicationController
 
       @order.line_items.destroy_all
       @order.save
-      
-      user = current_user
-      user.active_order_id = nil
-      user.save
     else #what to do if item is out of stock
       messages = ''
       first = true
@@ -113,6 +110,27 @@ class CartController < ApplicationController
       redirect_to :view_order
     end
   end
+  end
+  
+  def order_complete
+    @order = set_order
+    @amount = (@order.grand_total.to_f.round(2) * 100).to_i
+
+    customer = Stripe::Customer.create(
+      :email => current_user.email,
+      :card => params[:stripeToken]
+    )
+
+    charge = Stripe::Charge.create(
+      :customer => customer.id,
+      :amount => @amount,
+      :description => 'Rails Stripe customer',
+      :currency => 'usd'
+    )
+
+    rescue Stripe::CardError => e
+    flash[:error] = e.message
+    redirect_to charges_path
   end
   
   private

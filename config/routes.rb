@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   get 'view_order' => 'cart#view_order'
   get 'checkout' => 'cart#checkout'
   post 'remove_from_cart' => 'cart#remove_from_cart'
+  post 'order_complete' => 'cart#order_complete'
   
   #orders
 
