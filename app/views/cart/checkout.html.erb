@@ -17,6 +17,6 @@
     class="stripe-button"
     data-key="<%= Rails.configuration.stripe[:publishable_key] %>"
     data-description="Order #<%= @order.id %>"
-    data-amount="<%= (@order.subtotal.to_f.round(2) * 100) %>"></script>
+    data-amount="<%= (@order.grand_total.to_f.round(2) * 100) %>"></script>
   <% end %>
 </div>

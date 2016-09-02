@@ -68,12 +68,11 @@ class CartController < ApplicationController
     else
       #sets total quantities for each item in order and sets order.subtotal
       @order.subtotal = 0
+      @line_items.each do |line_item| #resets the order_items count
+        @order.order_items[line_item.product_id] = 0
+      end
       @line_items.each do |line_item|
-        if @order.order_items[line_item.product_id].nil?
-          @order.order_items[line_item.product_id] = line_item.quantity
-        else
-          @order.order_items[line_item.product_id] += line_item.quantity
-        end
+        @order.order_items[line_item.product_id] += line_item.quantity
         
         @order.subtotal += line_item.line_item_total
       end
@@ -83,14 +82,14 @@ class CartController < ApplicationController
       @order.save
       
       if out_of_stock #returns true if order can be filled
-        @line_items.each do |line_item|
-        #to prevent overselling an item
-          line_item.product.quantity -= line_item.quantity
-          line_item.product.save
-        end
+        # @line_items.each do |line_item|
+        # #to prevent overselling an item
+        #   line_item.product.quantity -= line_item.quantity
+        #   line_item.product.save
+        # end
   
-        @order.line_items.destroy_all
-        @order.save
+        # @order.line_items.destroy_all
+        # @order.save
       else #what to do if item is out of stock
         messages = ''
         first = true
@@ -112,21 +111,51 @@ class CartController < ApplicationController
   end
   
   def order_complete
-    @order = set_order
-    @amount = (@order.grand_total.to_f.round(2) * 100).to_i
-
-    customer = Stripe::Customer.create(
-      :email => current_user.email,
-      :card => params[:stripeToken]
-    )
-
-    charge = Stripe::Charge.create(
-      :customer => customer.id,
-      :amount => @amount,
-      :description => 'Rails Stripe customer',
-      :currency => 'usd'
-    )
-
+    if out_of_stock #returns true if order can be filled
+      @order = set_order
+      @line_items = @order.line_items
+      @amount = (@order.grand_total.to_f.round(2) * 100).to_i
+    
+      @line_items.each do |line_item|
+      #to prevent overselling an item
+        line_item.product.quantity -= line_item.quantity
+        line_item.product.save
+      end
+  
+      @order.line_items.destroy_all
+      @order.save
+        
+  
+      customer = Stripe::Customer.create(
+        :email => current_user.email,
+        :card => params[:stripeToken]
+      )
+  
+      charge = Stripe::Charge.create(
+        :customer => customer.id,
+        :amount => @amount,
+        :description => 'Rails Stripe customer',
+        :currency => 'usd'
+      )
+      
+    else #what to do if item is out of stock
+      messages = ''
+      first = true
+      @out_of_stock.each do |product_id, short|
+        product = Product.find(product_id)
+        if first
+          messages = "We are short #{short} #{product.name}"
+          first = false
+        else
+          messages += ", and #{short} #{product.name}"
+        end
+      end
+      messages += " for your order."
+      
+      flash[:alert] = messages
+      redirect_to :view_order
+    end
+  
     rescue Stripe::CardError => e
     flash[:error] = e.message
     redirect_to charges_path
