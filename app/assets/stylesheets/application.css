@@ -13,3 +13,25 @@
  *= require_tree .
  *= require_self
  */
+ 
+label {
+	text-align: right;
+	margin-right: 15px;
+	width: 100px;
+}
+
+.boolean {
+	margin-left: 57px;
+}
+
+.boolean label {
+	width: 120px;
+}
+
+.form-actions {
+	margin-left: 110px;
+}
+
+.form-align {
+	margin-left: 110px;
+}
