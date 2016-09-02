@@ -1,28 +1,18 @@
 <h1>Your Orders</h1>
 
-<%= link_to 'Create a new order', new_order_path %>
+<%= link_to 'Create a new order', new_order_path, class: 'btn btn-primary btn-sm' %>
+<hr>
 
 <% @orders.each do |order| %>
-    <br>
-    <%= form_for(order) do |f| %>
-        <div class="field">
-            <%= f.label :name %>: <%= order.name %><br>
-            <%= f.text_field :name %>
-        </div>
-        
-        <div class="actions">
-            <%= f.submit %>
-        </div>
-    <% end %>
     <p>ID: <%= order.id %></p>
     <% order.line_items.each do |order_item| %>
         <p><strong><%= order_item.product.name %>:</strong> <%= order_item.quantity %></p>
     <% end %>
-    <%= link_to 'Delete order', order, method: :delete, data: { confirm: 'Are you sure?' } %>
     <% if order.id == current_user.active_order_id %>
         <p>This is your active order.</p>
     <% else %>
-        <%= link_to 'Set as active order', select_order_path(order_id: order.id) %>
+        <%= link_to 'Set as active order', select_order_path(order_id: order.id), class: 'btn btn-primary btn-sm' %>
     <% end %>
+    <%= link_to 'Delete order', order, method: :delete, data: { confirm: 'Are you sure?' }, class: 'btn btn-danger btn-sm' %>
     <hr>
 <% end %>

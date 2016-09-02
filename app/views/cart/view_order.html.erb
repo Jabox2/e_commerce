@@ -12,19 +12,19 @@
         <p>
             <%= form_tag(add_to_cart_path(product_id: line_item.product.id, to_view: true)) do %>
                 <%= number_field_tag :quantity, nil, placeholder: "How many?" %><br />
-                <%= submit_tag "Add these items", class: "btn btn-success" %>
+                <%= submit_tag "Add these items", class: "btn btn-success btn-sm" %>
             <% end %>
         </p>
         <!-- Remove from Cart button -->
         <p>
             <%= form_tag(remove_from_cart_path(line_item_id: line_item.id)) do %>
                 <%= number_field_tag :quantity, nil, placeholder: "How many?" %><br />
-                <%= submit_tag "Remove these items", class: "btn btn-danger" %>
+                <%= submit_tag "Remove these items", class: "btn btn-danger btn-sm" %>
             <% end %>
         </p>
     <% end %>
 </div>
 
 <div>
-    <%= link_to "Proceed to checkout?", checkout_path, class: "btn btn-success" %>
+    <%= link_to "Proceed to checkout?", checkout_path, class: "btn btn-success btn-sm" %>
 </div>
