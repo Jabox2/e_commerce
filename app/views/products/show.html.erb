@@ -43,6 +43,6 @@
 <p>
   <%= form_tag(add_to_cart_path(product_id: @product.id)) do %>
     <%= number_field_tag :quantity, nil, placeholder: "How many?" %><br />
-    <%= submit_tag "Buy It!", class: "btn btn-danger" %>
+    <%= submit_tag "Add to Cart", class: "btn btn-success" %>
   <% end %>
 </p>
