@@ -1,11 +1,13 @@
 <h1><%= @head %></h1>
-<p>Have a look around :)<p>
 
-<div class="row">
-    <% @products.each do |product| %>
+<% count = 0 %>
+<% @products.each do |product| %>
+  <% if count % 3 == 0 %>
+    <div class="row">
+  <% end %>
     <div class="col-md-4">
         <div class="well center-it">
-            <p><%= image_tag product.image.url, width: '100%' %></p>
+            <p><%= image_tag product.image.url, class: 'item-image' %></p>
             <h3><%= link_to product.name, product %></h3>
             <p><%= number_to_currency(product.price) %></p>
             <p>
@@ -38,5 +40,9 @@
             </div>
           </div>
         </div>
-    <% end %>
-</div>
+    
+  <% count += 1 %>
+  <% if count % 3 == 0 %>
+    </div>
+  <% end %>
+<% end %>
