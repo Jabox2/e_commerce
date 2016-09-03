@@ -7,21 +7,21 @@
         <p>Quantity: <%= line_item.quantity %></p>
         <p>Subtotal: <%= number_to_currency line_item.line_item_total %></p>
         
-        
         <!-- Add to Cart button -->
         <p>
             <%= form_tag(add_to_cart_path(product_id: line_item.product.id, to_view: true)) do %>
-                <%= number_field_tag :quantity, nil, placeholder: "How many?" %><br />
+                <%= number_field_tag :quantity, nil, placeholder: "How many?" %>
                 <%= submit_tag "Add these items", class: "btn btn-success btn-sm" %>
             <% end %>
         </p>
         <!-- Remove from Cart button -->
         <p>
             <%= form_tag(remove_from_cart_path(line_item_id: line_item.id)) do %>
-                <%= number_field_tag :quantity, nil, placeholder: "How many?" %><br />
+                <%= number_field_tag :quantity, nil, placeholder: "How many?" %>
                 <%= submit_tag "Remove these items", class: "btn btn-danger btn-sm" %>
             <% end %>
         </p>
+        <hr>
     <% end %>
 </div>
 
