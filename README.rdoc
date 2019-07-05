@@ -1,3 +1,0 @@
-= e_commerce
-
-Simple e-commerce practice website built during course at Tech Talent South.
